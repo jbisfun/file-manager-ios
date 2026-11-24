@@ -1,0 +1,62 @@
+# Fossify File Manager for iOS. Build with `idl build -c release` (see README.md).
+toolchain:
+  sdk_bundle: ~/.swiftpm/swift-sdks/darwin.artifactbundle
+  swiftly_bin: ~/.local/share/swiftly/bin
+  swiftc: swiftc
+  ldid: ldid
+  actool: idl-actool
+
+targets:
+  - name: FossifyFileManager
+    bundle_id: org.fossify.filemanager.ios
+    version: "1.6.5"
+    build_number: "1"
+    min_ios: "17.0"
+    device_family: "1,2"
+    link: [FileManagerKit, FossifyCommons]
+    sources: [App]
+    resources: [Resources/Assets.xcassets]
+    frameworks: [SwiftUI, UIKit, Foundation, QuickLook, QuickLookThumbnailing, LocalAuthentication, AVFoundation, CryptoKit, ImageIO, UniformTypeIdentifiers]
+    swift_version: "5.0"
+    info:
+      CFBundleDisplayName: File Manager
+      NSFaceIDUsageDescription: File Manager uses Face ID for its password protection.
+      UIFileSharingEnabled: true
+      LSSupportsOpeningDocumentsInPlace: true
+      UIApplicationSceneManifest:
+        UIApplicationSupportsMultipleScenes: false
+      UISupportedInterfaceOrientations:
+        - UIInterfaceOrientationPortrait
+        - UIInterfaceOrientationLandscapeLeft
+        - UIInterfaceOrientationLandscapeRight
+      UISupportedInterfaceOrientations~ipad:
+        - UIInterfaceOrientationPortrait
+        - UIInterfaceOrientationPortraitUpsideDown
+        - UIInterfaceOrientationLandscapeLeft
+        - UIInterfaceOrientationLandscapeRight
+      CFBundleDocumentTypes:
+        - CFBundleTypeName: File
+          LSHandlerRank: Alternate
+          LSItemContentTypes: [public.data, public.content]
+    configurations:
+      debug:
+        entitlements:
+          get-task-allow: true
+
+  # Everything but the app entry point; also linked by the launcher (fossify-ios/launcher-ios).
+  - name: FileManagerKit
+    type: static
+    min_ios: "17.0"
+    link: [FossifyCommons]
+    sources: [Sources]
+    frameworks: [SwiftUI, UIKit, Foundation, QuickLook, QuickLookThumbnailing, LocalAuthentication, AVFoundation, CryptoKit, ImageIO, UniformTypeIdentifiers]
+    swift_version: "5.0"
+
+  # Shared core (fossify-ios/commons-ios), compiled into the app as a static Swift module.
+  - name: FossifyCommons
+    type: static
+    dir: ../commons-ios
+    min_ios: "17.0"
+    sources: [Sources]
+    frameworks: [SwiftUI, UIKit, Foundation]
+    swift_version: "5.0"
